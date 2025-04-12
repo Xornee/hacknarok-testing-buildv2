@@ -15,8 +15,9 @@
       "**/*"
     ],
     "ios": {
+      "jsEngine": "jsc",
       "supportsTablet": true,
-      "bundleIdentifier": "com.szymonmytych.hacknarok",
+      "bundleIdentifier": "com.szymonmytych.hacknarok", 
       "infoPlist": {
         "NSCameraUsageDescription": "This app needs camera access for Augmented Reality features using ARKit.",
         "NSLocationWhenInUseUsageDescription": "This app uses location to enhance the AR experience.",
