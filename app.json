@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "YourARGame",
+    "slug": "YourARGame",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.szymonmytych.hacknarok",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app requires camera access to provide Augmented Reality features.",
+        "NSLocationWhenInUseUsageDescription": "This app uses location to enhance the AR experience.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [],
+    "extra": {
+      "eas": {
+        "projectId": "f482f659-eeb0-4d62-b60e-299d19ad8356"
+      }
+    }
+  }
+}

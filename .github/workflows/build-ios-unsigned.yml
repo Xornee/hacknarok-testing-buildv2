@@ -1,0 +1,88 @@
+name: Build Unsigned iOS IPA
+
+# Controls when the workflow will run
+on:
+  workflow_dispatch: # Allows manual triggering from the GitHub Actions tab
+  # push: # Uncomment this block to trigger on pushes to the main branch
+  #   branches: [ main ] # Or your default branch name
+
+jobs:
+  build:
+    runs-on: macos-latest # Use the latest available macOS runner from GitHub
+
+    steps:
+      # 1. Checkout your code
+      - name: Checkout repository
+        uses: actions/checkout@v4 # Use the latest version of the checkout action
+
+      # 2. Setup Node.js environment
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18' # Use a recent LTS version compatible with Expo/React Native
+          cache: 'npm' # Cache npm dependencies for faster builds
+
+      # 3. Install JavaScript dependencies
+      - name: Install JS dependencies
+        run: npm ci # 'ci' is generally recommended for CI environments over 'install'
+
+      # 4. Install Expo CLI globally
+      - name: Install Expo CLI
+        run: npm install -g expo-cli
+
+      # 5. Generate native iOS project (without installing pods automatically)
+      # This creates the 'ios' directory based on your app.json and dependencies
+      - name: Prebuild iOS project
+        run: npx expo prebuild --platform ios --no-install
+
+      # 6. Install iOS native dependencies using CocoaPods
+      # We need to navigate into the generated 'ios' directory first
+      - name: Install CocoaPods dependencies
+        run: |
+          cd ios
+          pod install --repo-update # Ensure pods are installed and repositories updated
+
+      # 7. Build the Xcode project WITHOUT code signing
+      # This is the core step. It builds the .app bundle.
+      # NOTE: Replace 'YourARGame' with your actual Xcode project name/scheme if different
+      #       Check your 'ios' folder after prebuild if unsure.
+      - name: Build unsigned Xcode project
+        run: |
+          xcodebuild build \
+            -workspace ios/YourARGame.xcworkspace \
+            -scheme YourARGame \
+            -sdk iphoneos \
+            -configuration Release \
+            -derivedDataPath build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+      # 8. Package the .app into an unsigned .ipa
+      - name: Package IPA
+        run: |
+          # Define path to the built .app file
+          APP_PATH="build/Build/Products/Release-iphoneos/YourARGame.app" # Adjust if your scheme/project name is different
+
+          # Check if the .app exists
+          if [ ! -d "$APP_PATH" ]; then
+            echo "Error: .app file not found at $APP_PATH"
+            ls -R build/Build/Products/ # List build products for debugging
+            exit 1
+          fi
+
+          # Create the Payload directory required for IPA structure
+          mkdir Payload
+
+          # Copy the .app into the Payload directory
+          cp -R "$APP_PATH" Payload/
+
+          # Zip the Payload directory into an IPA file
+          zip -r YourARGame-unsigned.ipa Payload/
+
+      # 9. Upload the unsigned .ipa as an artifact
+      - name: Upload Unsigned IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-unsigned-build # Name of the artifact on GitHub Actions
+          path: YourARGame-unsigned.ipa # Path to the file to upload
