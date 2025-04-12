@@ -18,7 +18,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.szymonmytych.hacknarok",
       "infoPlist": {
-        "NSCameraUsageDescription": "This app requires camera access to provide Augmented Reality features.",
+        "NSCameraUsageDescription": "This app needs camera access for Augmented Reality features using ARKit.",
         "NSLocationWhenInUseUsageDescription": "This app uses location to enhance the AR experience.",
         "ITSAppUsesNonExemptEncryption": false
       }
